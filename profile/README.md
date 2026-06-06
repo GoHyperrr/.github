@@ -50,6 +50,8 @@ Unlike legacy commerce systems, Hyperrr treats all business operations as determ
 | [**`commerce`**](https://github.com/GoHyperrr/commerce) | High-performance sub-modules for catalog management, shopping carts, orders, fulfillment, search, and support. | Go, GORM |
 | [**`auth`**](https://github.com/GoHyperrr/auth) | Pluggable authorization providers including standard email/password, JWT verification, and secure API Key generation. | Go, bcrypt |
 | [**`file-storage`**](https://github.com/GoHyperrr/file-storage) | Pluggable file storage module implementing object storage providers (S3, GCS, Azure, and local file storage) using the Go CDK. | Go, Go Cloud SDK |
+| [**`database`**](https://github.com/GoHyperrr/database) | Pluggable database module housing external database drivers and adapters (PostgreSQL GORM dialect). | Go, GORM, pgx |
+| [**`event-bus`**](https://github.com/GoHyperrr/event-bus) | Pluggable event fabric module housing distributed message bus, lock manager, and state store adapters (NATS JetStream). | Go, NATS Go |
 
 ---
 
@@ -64,6 +66,8 @@ Unlike legacy commerce systems, Hyperrr treats all business operations as determ
 
 ## 🆕 Recent Updates & Decoupling Refactoring
 
+* **🗃️ Out-of-Tree Database & Event-Bus Adapters**: Decoupled the PostgreSQL GORM driver and NATS event bus/locker/workflow state store out of the core kernel into separate pluggable top-level modules (`database` and `event-bus`). Keeps core light and zero-dependency (defaulting to SQLite and in-memory event-bus).
+* **🚀 Strategy 3 Workspace Dependency Resolution**: Cleaned all `go.mod` files of local `replace` directives. Dependencies are now resolved sequentially using Git pseudo-versions and standard Go workspaces (`go.work`), optimizing package modularity and developer experience.
 * **📁 Pluggable File Storage**: Replaced the heavy cloud storage dependency in the core with a lightweight local disk and memory-based `CloudProvider` in the core engine. Out-of-tree cloud storage providers (S3, Azure Blob, and GCS) are now packaged under the separate [**`file-storage`**](https://github.com/GoHyperrr/file-storage) repository.
 * **🔑 Clean Interface-Based Actor Model**: Decoupled the `mdk.Actor` definition into a pure interface, extracting the concrete database representation to `auth.Actor` inside the `auth` module.
 * **🛠️ Dynamic Currency Support**: Added dynamic currency configurations to `hyperrr.yml` and parameterized the MCP server to support formatting multiple currencies (e.g., USD, EUR, GBP, JPY, INR) dynamically based on catalog metadata and settings.
@@ -82,6 +86,8 @@ Hyperrr uses Go Workspace (`go.work`) to link modules together locally for seaml
    git clone https://github.com/GoHyperrr/commerce.git
    git clone https://github.com/GoHyperrr/auth.git
    git clone https://github.com/GoHyperrr/file-storage.git
+   git clone https://github.com/GoHyperrr/database.git
+   git clone https://github.com/GoHyperrr/event-bus.git
    ```
 
 2. **Setup the Go Workspace**:
@@ -92,6 +98,8 @@ Hyperrr uses Go Workspace (`go.work`) to link modules together locally for seaml
    use (
        ./auth
        ./commerce
+       ./database
+       ./event-bus
        ./file-storage
        ./hyperrr
        ./mdk
